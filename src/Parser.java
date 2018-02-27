@@ -48,10 +48,24 @@ public class Parser
 		return roles;
 	}
 
-	private void createEmptyRole(GuildController guildController, String s)
+	private void createMentionableRole(String name)
 	{
-		System.out.println("Creating role with name " + s);
-		guildController.createRole().setName(s).queue();
+		if (!guild.getRolesByName(name, false).isEmpty())
+		{
+			send("Role " + name + " already exists");
+			return;
+		}
+
+		System.out.println("Creating role with name " + name);
+		try
+		{
+			guildController.createRole().setName(name).queue();
+			guild.getRolesByName(name, true).get(0).getManager().setMentionable(true).queue();
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		System.out.println("Done");
 	}
 
@@ -93,35 +107,7 @@ public class Parser
 
 		guildController = guild.getController();
 
-		/*
-		System.out.println("about to add all roles");
-		Member dummy = getDummyMember(dummyName);
-		List<Role> rolesUnmod = getUsableRoles(guild);
-		List<Role> roles = new ArrayList<Role>(rolesUnmod);
-		try
-		{
-			roles.remove(guild.getPublicRole());
-		}
-		catch (Exception ex)
-		{
-			System.err.println(" --------------------- REMOVING PUBLIC ROLE FROM ROLES");
-			ex.printStackTrace();
-		}
-		for (Role r : roles)
-		{
-			try
-			{
-				System.out.println("Current role: " + r.getName());
-				guildController.addRolesToMember(dummy, r).queue();
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
-		}
-
-		System.out.println("Added all roles");
-		*/
+		System.out.println(member.getEffectiveName() + " : " + message.getContentDisplay());
 	}
 
 	public boolean validate()
@@ -186,7 +172,6 @@ public class Parser
 				String listAllMessage = "List of all available roles\n";
 				for (Role r : allRoles)
 				{
-					System.out.println("Got " + r.getName());
 					listAllMessage += r.getName() + "\n";
 				}
 				send(listAllMessage);
@@ -342,15 +327,8 @@ public class Parser
 					send("Usage: `createRole role`");
 					return;
 				}
-
-				try
-				{
-					guildController.createRole().setName(argument).queue();
-				}
-				catch (Exception ex)
-				{
-					ex.printStackTrace();
-				}
+				
+				createMentionableRole(argument);
 				break;
 			}
 			case "createRoles":
@@ -361,15 +339,7 @@ public class Parser
 				while (st.hasMoreTokens())
 				{
 					argument = st.nextToken();
-
-					try
-					{
-						guildController.createRole().setName(argument).queue();
-					}
-					catch (Exception ex)
-					{
-						ex.printStackTrace();
-					}
+					createMentionableRole(argument);
 				}
 
 				break;
