@@ -1,16 +1,16 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
-import net.dv8tion.jda.core.requests.restaction.RoleAction;
 
 public class Parser
 {
@@ -22,6 +22,23 @@ public class Parser
 	private MessageChannel				channel;
 	private Guild						guild;
 	private GuildController				guildController;
+
+	public Parser(GuildMessageReceivedEvent e) throws Exception
+	{
+		event = e;
+		message = e.getMessage();
+		member = e.getMember();
+		channel = e.getChannel();
+		st = new StringTokenizer(message.getContentStripped());
+		guild = e.getGuild();
+
+		if (guild == null)
+		{
+			throw new Exception();
+		}
+
+		guildController = guild.getController();
+	}
 
 	// Helper functions
 
@@ -60,13 +77,27 @@ public class Parser
 		try
 		{
 			guildController.createRole().setName(name).queue();
-			guild.getRolesByName(name, true).get(0).getManager().setMentionable(true).queue();
+			guild.getRolesByName(name, true).get(0).getManager().setMentionable(true).queueAfter(500, TimeUnit.MILLISECONDS);
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
 		System.out.println("Done");
+	}
+
+	private void outputListOfRoles(List<Role> roles, String prefix)
+	{
+		String out = prefix;
+		List<String> roleNames = new ArrayList<>();
+		for (Role r : roles)
+		{
+			roleNames.add(r.getName());
+		}
+		Collections.sort(roleNames);
+		String s = roleNames.toString();
+		out += s.substring(1, s.length() - 1);
+		send(out);
 	}
 
 	private void help()
@@ -91,25 +122,6 @@ public class Parser
 
 	// Functions
 
-	public Parser(GuildMessageReceivedEvent e) throws Exception
-	{
-		event = e;
-		message = e.getMessage();
-		member = e.getMember();
-		channel = e.getChannel();
-		st = new StringTokenizer(message.getContentStripped());
-		guild = e.getGuild();
-
-		if (guild == null)
-		{
-			throw new Exception();
-		}
-
-		guildController = guild.getController();
-
-		System.out.println(member.getEffectiveName() + " : " + message.getContentDisplay());
-	}
-
 	public boolean validate()
 	{
 		return st.nextToken().equals(Global.prefix);
@@ -117,12 +129,14 @@ public class Parser
 
 	public void execute()
 	{
+		System.out.println(member.getEffectiveName() + " : " + message.getContentDisplay());
+
 		if (!st.hasMoreTokens())
 		{
 			send("invalid command invoked");
 			return;
 		}
-		String command = st.nextToken();
+		String command = st.nextToken().toLowerCase();
 		switch (command)
 		{
 			case "help":
@@ -138,22 +152,17 @@ public class Parser
 
 				try
 				{
-					
 					List<Role> memberRoles = new ArrayList<>(member.getRoles());
 					memberRoles.remove(guild.getPublicRole());
-					
+
 					if (memberRoles.isEmpty())
 					{
 						send(tagMember() + " has no roles");
 						return;
 					}
-					
+
 					String listMessage = "List of current roles for " + tagMember() + "\n";
-					for (Role r : memberRoles)
-					{
-						listMessage += r.getName() + "\n";
-					}
-					send(listMessage);
+					outputListOfRoles(memberRoles, listMessage);
 				}
 				catch (Exception ex)
 				{
@@ -161,24 +170,19 @@ public class Parser
 				}
 				break;
 			}
-			case "listAll":
+			case "listall":
 			{
 				send("`listAll` command invoked");
 
 				List<Role> allRoles = new ArrayList<>(guild.getRoles());
-				System.out.println(allRoles);
 				allRoles.remove(guild.getPublicRole());
 
 				String listAllMessage = "List of all available roles\n";
-				for (Role r : allRoles)
-				{
-					listAllMessage += r.getName() + "\n";
-				}
-				send(listAllMessage);
+				outputListOfRoles(allRoles, listAllMessage);
 				break;
 			}
 
-			case "addRole":
+			case "addrole":
 			{
 				send("`addRole` command invoked");
 
@@ -201,7 +205,7 @@ public class Parser
 				}
 				break;
 			}
-			case "addRoles":
+			case "addroles":
 			{
 				send("`addRoles` command invoked");
 
@@ -239,7 +243,7 @@ public class Parser
 				break;
 			}
 
-			case "removeRole":
+			case "removerole":
 			{
 				send("`removeRole` command invoked");
 
@@ -262,7 +266,7 @@ public class Parser
 				}
 				break;
 			}
-			case "removeRoles":
+			case "removeroles":
 			{
 				send("`removeRoles` command invoked");
 
@@ -298,7 +302,7 @@ public class Parser
 				guildController.removeRolesFromMember(member, rolesToRemove).queue();
 				break;
 			}
-			case "removeAllRoles":
+			case "removeallroles":
 			{
 				send("`removeAllRoles` command invoked");
 
@@ -317,7 +321,7 @@ public class Parser
 				break;
 			}
 
-			case "createRole":
+			case "createrole":
 			{
 				send("`createRole` command invoked");
 
@@ -331,7 +335,7 @@ public class Parser
 				createMentionableRole(argument);
 				break;
 			}
-			case "createRoles":
+			case "createroles":
 			{
 				send("`createRoles` command invoked");
 
