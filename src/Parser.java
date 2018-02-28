@@ -65,6 +65,8 @@ public class Parser
 		return roles;
 	}
 
+	// Create a role with name `name`, and if successful, set mentionable
+	// Fail if another role with same name exists
 	private void createMentionableRole(String name)
 	{
 		if (!guild.getRolesByName(name, false).isEmpty())
@@ -76,8 +78,7 @@ public class Parser
 		System.out.println("Creating role with name " + name);
 		try
 		{
-			guildController.createRole().setName(name).queue();
-			guild.getRolesByName(name, true).get(0).getManager().setMentionable(true).queueAfter(500, TimeUnit.MILLISECONDS);
+			guildController.createRole().setName(name).queue(x -> x.getManager().setMentionable(true).queue());
 		}
 		catch (Exception ex)
 		{
