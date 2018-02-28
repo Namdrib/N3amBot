@@ -80,7 +80,7 @@ public class Parser
 		try
 		{
 			guildController.createRole().setName(name)
-			.queue(x -> x.getManager().setMentionable(true).queue());
+					.queue(x -> x.getManager().setMentionable(true).queue());
 		}
 		catch (Exception ex)
 		{
@@ -344,8 +344,7 @@ public class Parser
 					ex.printStackTrace();
 				}
 			}
-			String out = "Roles removed from " + member.getEffectiveName()
-					+ ": ";
+			String out = "Roles removed from " + member.getEffectiveName() + ": ";
 			out += listWithoutBrackets(removed);
 			send(out);
 			break;
