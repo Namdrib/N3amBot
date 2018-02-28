@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -86,18 +87,26 @@ public class Parser
 		}
 		System.out.println("Done");
 	}
+	
+	private <E> String listWithoutBrackets(List<E> items)
+	{
+		String s = items.toString();
+		return s.substring(1, s.length() - 1);
+	}
 
 	private void outputListOfRoles(List<Role> roles, String prefix)
 	{
 		String out = prefix;
-		List<String> roleNames = new ArrayList<>();
-		for (Role r : roles)
-		{
-			roleNames.add(r.getName());
-		}
-		Collections.sort(roleNames);
-		String s = roleNames.toString();
-		out += s.substring(1, s.length() - 1);
+		Collections.sort(roles, new Comparator<Role>() {
+			@Override
+			public int compare(Role a, Role b)
+			{
+				return a.getName().compareTo(b.getName());
+			}
+		});
+		List<String> namesList = roles.stream().map(Role::getName)
+				.collect(Collectors.toList());
+		out += listWithoutBrackets(namesList);
 		send(out);
 	}
 
@@ -116,6 +125,7 @@ public class Parser
 				+ "  `removeAllRoles`: remove all roles from yourself\n"
 				+ "  `createRole ROLE`: create a role with name `ROLE`\n"
 				+ "  `createRoles ROLES...`: create multiple roles with names `ROLES...`\n"
+				+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
 				;
 
 		send(helpMessage);
@@ -196,7 +206,13 @@ public class Parser
 				
 				try
 				{
-					Role r = guild.getRolesByName(argument, true).get(0);
+					List<Role> roles = guild.getRolesByName(argument, true);
+					if (roles.isEmpty())
+					{
+						send("Role " + argument + " does not exist. Maybe try creating it first");
+						return;
+					}
+					Role r = roles.get(0);
 					send("Adding " + r.getName());
 					guildController.addSingleRoleToMember(member, r).queue();
 				}
@@ -257,7 +273,13 @@ public class Parser
 
 				try
 				{
-					Role roleToRemove = guild.getRolesByName(argument, true).get(0);
+					List<Role> roles = guild.getRolesByName(argument, true);
+					if (roles.isEmpty())
+					{
+						send(argument + " is not assigned to " + member.getEffectiveName());
+						return;
+					}
+					Role roleToRemove = roles.get(0);
 					send("Removing " + roleToRemove.getName());
 					guildController.removeSingleRoleFromMember(member, roleToRemove).queue();
 				}
@@ -308,17 +330,22 @@ public class Parser
 				send("`removeAllRoles` command invoked");
 
 				List<Role> roles = new ArrayList<>(member.getRoles());
+				List<String> removed = new ArrayList<>();
 				for (Role r : roles)
 				{
 					try
 					{
 						guildController.removeSingleRoleFromMember(member, r).queue();
+						removed.add(r.getName());
 					}
 					catch (Exception ex)
 					{
 						ex.printStackTrace();
 					}
 				}
+				String out = "Roles removed from " + member.getEffectiveName() + ": ";
+				out += listWithoutBrackets(removed);
+				send(out);
 				break;
 			}
 
@@ -347,6 +374,40 @@ public class Parser
 					createMentionableRole(argument);
 				}
 
+				break;
+			}
+			
+			case "memberswith":
+			{
+				send("`membersWith` command invoked");
+
+				String argument = st.nextToken();
+				if (argument == null)
+				{
+					send("Usage: `membersWith role`");
+					return;
+				}
+
+				List<Member> members = guild
+						.getMembersWithRoles(guild.getRolesByName(argument, true));
+				if (members.isEmpty())
+				{
+					send("No members with role " + argument);
+					return;
+				}
+
+				Collections.sort(members, new Comparator<Member>() {
+					@Override
+					public int compare(Member a, Member b)
+					{
+						return a.getEffectiveName().compareTo(b.getEffectiveName());
+					}
+				});
+				String out = "Members with role " + argument + ":\n";
+				List<String> namesList = members.stream()
+						.map(Member::getEffectiveName).collect(Collectors.toList());
+				out += listWithoutBrackets(namesList);
+				send(out);
 				break;
 			}
 			

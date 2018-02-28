@@ -13,6 +13,7 @@ public class Global
 		"removeRoles",
 		"removeAllRoles",
 		"createRole",
-		"createRoles"
+		"createRoles",
+		"membersWith"
 	};
 }
