@@ -48,11 +48,6 @@ public class Parser
 		channel.sendMessage(msg).queue();
 	}
 
-	private String tagMember()
-	{
-		return member.getAsMention();
-	}
-
 	private List<Role> getUsableRoles(Guild g)
 	{
 		List<Role> roles = g.getRoles();
@@ -169,11 +164,11 @@ public class Parser
 
 				if (memberRoles.isEmpty())
 				{
-					send(tagMember() + " has no roles");
+					send(member.getEffectiveName() + " has no roles");
 					return;
 				}
 
-				String listMessage = "List of current roles for " + tagMember() + "\n";
+				String listMessage = "List of current roles for " + member.getEffectiveName() + "\n";
 				outputListOfRoles(memberRoles, listMessage);
 			}
 			catch (Exception ex)
@@ -227,6 +222,7 @@ public class Parser
 		{
 			send("`addRoles` command invoked");
 
+			// Collect all the aforementioned roles
 			String argument;
 			List<Role> rolesToAdd = new ArrayList<>();
 			final List<Role> allRoles = guild.getRoles();
