@@ -1,2 +1,1 @@
-bot: mvn clean install; java $JAVA_OPTS -cp target/classes:target/dependency* App
-
+bot: java -jar target/discord-role-bot-0.0.1-SNAPSHOT.jar
