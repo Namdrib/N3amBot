@@ -19,27 +19,7 @@ public class App extends ListenerAdapter
 {
 	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
 	{
-		Properties prop = new Properties();
-		String filename = "config.properties";
-		String botToken = new String();
-
-		// Read the bot's token from filename
-		try (InputStream input = App.class.getClassLoader().getResourceAsStream(filename))
-		{
-			if (input == null)
-			{
-				System.out.println("Unable to open file " + filename);
-				return;
-			}
-
-			prop.load(input);
-			botToken = prop.getProperty("botToken");
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
-
+		String botToken = "NDE3MzM3Mzg0NDIyODY2OTQ4.DXjbpA.uDQiDAfVEXIZo-aCtK9E8XqYd20";
 		JDA api = new JDABuilder(AccountType.BOT)
 				.setToken(botToken)
 				.addEventListener(new App())
