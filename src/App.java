@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.core.AccountType;
@@ -13,11 +17,31 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class App extends ListenerAdapter
 {
-	public final static String botToken = "YOUR_BOT_TOKEN_HERE";
 	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
 	{
+		Properties prop = new Properties();
+		String filename = "config.properties";
+		String botToken = new String();
+
+		// Read the bot's token from filename
+		try (InputStream input = App.class.getClassLoader().getResourceAsStream(filename))
+		{
+			if (input == null)
+			{
+				System.out.println("Unable to open file " + filename);
+				return;
+			}
+
+			prop.load(input);
+			botToken = prop.getProperty("botToken");
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+
 		JDA api = new JDABuilder(AccountType.BOT)
-				.setToken(App.botToken)
+				.setToken(botToken)
 				.addEventListener(new App())
 				.buildAsync();
 
@@ -41,7 +65,7 @@ public class App extends ListenerAdapter
 		}
 		catch (Exception ex)
 		{
-			;
+			ex.printStackTrace();
 		}
 	}
 }
