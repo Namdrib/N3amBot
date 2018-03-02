@@ -18,13 +18,18 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class App extends ListenerAdapter
 {
-	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
+	// Try to read the bot token
+	// Read from `config.properties` (in project root)
+	// If that doesn't exist, try to retrieve from environment vars
+	public static String getBotToken()
 	{
-		Properties prop = new Properties();
-		String filename = "config.properties"; // make sure this exists, put your token in here
-		String botToken = new String();
+		String botToken = null;
+		final String envVar = "DISCORD_ROLEBOT_TOKEN";
 
-		// Read the bot's token from filename
+		Properties prop = new Properties();
+		final String filename = "config.properties"; // make sure this file exists, store token there
+
+		// Read the bot's token from filename or environment variable
 		try (InputStream input = new FileInputStream(filename))
 		{
 			prop.load(input);
@@ -35,6 +40,17 @@ public class App extends ListenerAdapter
 			ex.printStackTrace();
 		}
 
+		// Retrieve from environment variables (for Heroku)
+		if (botToken == null)
+		{
+			botToken = System.getenv(envVar);
+		}
+		return botToken;
+	}
+
+	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
+	{
+		final String botToken = App.getBotToken();
 		JDA api = new JDABuilder(AccountType.BOT)
 				.setToken(botToken)
 				.addEventListener(new App())

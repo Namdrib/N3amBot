@@ -6,6 +6,7 @@ Feel free to make pull requests or issues if there's anything that you think is 
 ## Installation
 - Requires Java 8, Maven
 - Copy `config.properties.dummy` into `config.properties` and replace `YOUR_BOT_TOKEN_HERE` with your bot token (no quotes necessary)
+	- Alternatively, create an environment variable on your machine with the key `DISCORD_ROLEBOT_TOKEN` and set its value to be your token. This approach can be used for external hosting (e.g. deploying as a Heroku app)
 - Compile using an IDE (such as Eclipse) or using the following:
 	- `mvn clean install`
 	- `java -jar target/discord-role-bot-jar-with-dependencies.jar`
