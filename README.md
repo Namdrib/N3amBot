@@ -4,7 +4,7 @@ Simple role management Discord bot
 Feel free to make pull requests or issues if there's anything that you think is incorrect or could be improved on
 
 ## Installation
-- Requires Java 8, Maven
+- Requires Java 8, Maven, a [Discord bot token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 - Copy `config.properties.dummy` into `config.properties` and replace `YOUR_BOT_TOKEN_HERE` with your bot token (no quotes necessary)
 	- Alternatively, create an environment variable on your machine with the key `DISCORD_ROLEBOT_TOKEN` and set its value to be your token. This approach can be used for external hosting (e.g. deploying as a Heroku app)
 - Compile using an IDE (such as Eclipse) or using the following:
@@ -16,7 +16,7 @@ Feel free to make pull requests or issues if there's anything that you think is 
 
 The prefix used to activate RoleBot is `@RoleBot` (can be changed in `Global.java`)
 
-List of accepted commands and their function:
+List of accepted (case-insenstive) commands and their function:
 - `help`: display this help message
 - `list`: list your own roles
 - `listAll`: list all available roles you can add to yourself
@@ -27,10 +27,8 @@ List of accepted commands and their function:
 - `removeAllRoles`: remove all roles from yourself
 - `createRole ROLE`: create a role with name `ROLE`
 - `createRoles ROLES...`: create multiple roles with names `ROLES...`
-- `membersWith ROLE`: list all members to whom ROLE is assigned: 
+- `membersWith ROLE`: list all members to whom ROLE is assigned
 
 All of these commands only apply to the person invoking them. i.e. they cannot be used to modify roles of other members.
 
-The addition/removal of roles will not work if the role of interest is "higher or equal highest role than [the invoker]". For example, a member with no existing roles cannot give themselves an admin role. 
-
-TODO : Figure out how to allow assignment of "mention-only" roles. As a follow-up, figure out how to allow creation of "mention-only" roles so they can be assigned
+The addition/removal of roles will not work if the role of interest is "higher or equal highest role than [the invoker]". This order is based on the the role order in the server (In server settings -> Roles, with the "first" role being the highest and "last" role being the lowest). For example, if the order is ["a", "the\_bots\_role", "b", "c"], then the bot may only manage roles b and c. You can use this to "protect" some roles (such as as admin/mod/elevated roles). 
