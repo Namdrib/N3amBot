@@ -290,6 +290,7 @@ public class Parser
 		{
 			send("`removeRoles` command invoked");
 
+			// Collect all the aforementioned roles
 			String argument;
 			List<Role> rolesToRemove = new ArrayList<>();
 			final List<Role> potentialRoles = member.getRoles();
