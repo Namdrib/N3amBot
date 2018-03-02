@@ -21,7 +21,7 @@ public class App extends ListenerAdapter
 	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
 	{
 		Properties prop = new Properties();
-		String filename = "config.properties";
+		String filename = "config.properties"; // make sure this exists, put your token in here
 		String botToken = new String();
 
 		// Read the bot's token from filename

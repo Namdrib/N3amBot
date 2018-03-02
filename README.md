@@ -4,10 +4,14 @@ Simple role management Discord bot
 Feel free to make pull requests or issues if there's anything that you think is incorrect or could be improved on
 
 ## Installation
-TODO
+- Requires Java 8, Maven
+- Copy `config.properties.dummy` into `config.properties` and replace `YOUR_BOT_TOKEN_HERE` with your bot token (no quotes necessary)
+- Compile using an IDE (such as Eclipse) or using the following:
+	- `mvn clean install`
+	- `java -jar target/discord-role-bot-jar-with-dependencies.jar`
 
 ## Usage
-**IMPORTANT**: RoleBot must have the permission to  manage roles in the server for the commands to work.
+**IMPORTANT**: RoleBot must have the permission to manage roles in the server for the commands to work.
 
 The prefix used to activate RoleBot is `@RoleBot` (can be changed in `Global.java`)
 
@@ -22,6 +26,7 @@ List of accepted commands and their function:
 - `removeAllRoles`: remove all roles from yourself
 - `createRole ROLE`: create a role with name `ROLE`
 - `createRoles ROLES...`: create multiple roles with names `ROLES...`
+- `membersWith ROLE`: list all members to whom ROLE is assigned: 
 
 All of these commands only apply to the person invoking them. i.e. they cannot be used to modify roles of other members.
 
