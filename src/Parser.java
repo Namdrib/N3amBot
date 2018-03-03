@@ -193,12 +193,12 @@ public class Parser
 		{
 			send("`addRole` command invoked");
 
-			String argument = st.nextToken();
-			if (argument == null)
+			if (!st.hasMoreTokens())
 			{
 				send("Usage: `addRole role`");
 				return;
 			}
+			String argument = st.nextToken();
 
 			try
 			{
@@ -261,12 +261,12 @@ public class Parser
 		{
 			send("`removeRole` command invoked");
 
-			String argument = st.nextToken();
-			if (argument == null)
+			if (!st.hasMoreTokens())
 			{
 				send("Usage: `removeRole role`");
 				return;
 			}
+			String argument = st.nextToken();
 
 			try
 			{
@@ -351,12 +351,12 @@ public class Parser
 		{
 			send("`createRole` command invoked");
 
-			String argument = st.nextToken();
-			if (argument == null)
+			if (!st.hasMoreTokens())
 			{
 				send("Usage: `createRole role`");
 				return;
 			}
+			String argument = st.nextToken();
 
 			createMentionableRole(argument);
 			break;
@@ -379,12 +379,12 @@ public class Parser
 		{
 			send("`membersWith` command invoked");
 
-			String argument = st.nextToken();
-			if (argument == null)
+			if (!st.hasMoreTokens())
 			{
 				send("Usage: `membersWith role`");
 				return;
 			}
+			String argument = st.nextToken();
 
 			List<Member> members = guild
 					.getMembersWithRoles(guild.getRolesByName(argument, true));
