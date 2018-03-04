@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,8 +27,8 @@ public class Parser
 
 	// Used for `undo`
 	private String						recentCommand;
-	private List<Role>					recentRoles;
 	private Member						recentMember;
+	private List<Role>					recentRoles;
 
 	public Parser(GuildMessageReceivedEvent e) throws Exception
 	{
@@ -51,6 +52,30 @@ public class Parser
 	private void send(String msg)
 	{
 		channel.sendMessage(msg).queue();
+	}
+
+	private void help()
+	{
+		String helpMessage
+			= " ----- " + Global.botName + " help -----\n"
+			+ "Invoke the bot using `" + Global.prefix + "` followed by one of the following commands:\n"
+			+ "  `help`: display this help message\n"
+			+ "  `list`: list your own roles\n"
+			+ "  `listAll`: list all available roles you can add to yourself\n"
+			+ "  `addRole ROLE`: add `ROLE` to yourself (where `ROLE` is in `listAll`)\n"
+			+ "  `addRoles ROLES...`: add `ROLES...` to yourself (where `ROLES...` are in `listAll`)\n"
+			+ "  `removeRole ROLE`: remove `ROLE` from yourself (where `ROLE` is in `list`)\n"
+			+ "  `removeRoles ROLES...`: remove `ROLES...` from yourself (where `ROLES...` are in `listAll`)\n"
+			+ "  `removeAllRoles`: remove all roles from yourself\n"
+			+ "  `createRole ROLE`: create a role with name `ROLE`\n"
+			+ "  `createRoles ROLES...`: create multiple roles with names `ROLES...`\n"
+			+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
+			+ "  `undo`: undo the most recent action (only works for add, remove, and create)\n"
+			+ "    only works if the most recent action was performed by the invoking member\n"
+			+ "    e.g. if PersonA creates four roles, only PersonA can undo this.\n"
+		;
+
+		send(helpMessage);
 	}
 
 	private List<Role> getUsableRoles(Guild g)
@@ -111,25 +136,13 @@ public class Parser
 		send(out);
 	}
 
-	private void help()
+	// Call this on modify commands
+	private void updateRecent(String recentCommand, Member recentMember, List<Role> recentRoles)
 	{
-		String helpMessage
-			= " ----- " + Global.botName + " help -----\n"
-			+ "Invoke the bot using `" + Global.prefix + "` followed by one of the following commands:\n"
-			+ "  `help`: display this help message\n"
-			+ "  `list`: list your own roles\n"
-			+ "  `listAll`: list all available roles you can add to yourself\n"
-			+ "  `addRole ROLE`: add `ROLE` to yourself (where `ROLE` is in `listAll`)\n"
-			+ "  `addRoles ROLES...`: add `ROLES...` to yourself (where `ROLES...` are in `listAll`)\n"
-			+ "  `removeRole ROLE`: remove `ROLE` from yourself (where `ROLE` is in `list`)\n"
-			+ "  `removeRoles ROLES...`: remove `ROLES...` from yourself (where `ROLES...` are in `listAll`)\n"
-			+ "  `removeAllRoles`: remove all roles from yourself\n"
-			+ "  `createRole ROLE`: create a role with name `ROLE`\n"
-			+ "  `createRoles ROLES...`: create multiple roles with names `ROLES...`\n"
-			+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
-		;
-
-		send(helpMessage);
+		this.recentCommand = recentCommand;
+		this.recentMember = recentMember;
+		this.recentRoles = recentRoles;
+		System.out.println("Update recent: " + recentCommand + ", " + recentMember.getEffectiveName() + ", " + recentRoles);
 	}
 
 	// Functions
@@ -216,8 +229,16 @@ public class Parser
 					return;
 				}
 				Role r = roles.get(0);
-				send("Adding " + r.getName());
-				guildController.addSingleRoleToMember(member, r).queue();
+				if (member.getRoles().contains(r))
+				{
+					send(member.getEffectiveName() + " already has role " + r.getName());
+				}
+				else
+				{
+					send("Adding " + r.getName());
+					guildController.addSingleRoleToMember(member, r).queue();
+					updateRecent("add", member, new ArrayList<Role>(Arrays.asList(r)));
+				}
 			}
 			catch (Exception ex)
 			{
@@ -285,7 +306,9 @@ public class Parser
 				}
 				Role roleToRemove = roles.get(0);
 				send("Removing " + roleToRemove.getName());
-				guildController.removeSingleRoleFromMember(member, roleToRemove).queue();
+				guildController.removeSingleRoleFromMember(member, roleToRemove)
+						.queue((r) -> updateRecent("remove", member,
+								new ArrayList<Role>(Arrays.asList())));
 			}
 			catch (Exception ex)
 			{
@@ -328,6 +351,7 @@ public class Parser
 
 			send("Removing " + rolesToRemove);
 			guildController.removeRolesFromMember(member, rolesToRemove).queue();
+			updateRecent("remove", member, new ArrayList<Role>(rolesToRemove));
 			break;
 		}
 		case "removeallroles":
@@ -335,19 +359,20 @@ public class Parser
 			send("`removeAllRoles` command invoked");
 
 			List<Role> roles = new ArrayList<>(member.getRoles());
-			List<String> removed = new ArrayList<>();
+			List<Role> removed = new ArrayList<>();
 			for (Role r : roles)
 			{
 				try
 				{
 					guildController.removeSingleRoleFromMember(member, r).queue();
-					removed.add(r.getName());
+					removed.add(r);
 				}
 				catch (Exception ex)
 				{
 					ex.printStackTrace();
 				}
 			}
+			updateRecent("remove", member, new ArrayList<Role>(removed));
 			String out = "Roles removed from " + member.getEffectiveName() + ": ";
 			out += listWithoutBrackets(removed);
 			send(out);
@@ -418,14 +443,68 @@ public class Parser
 		
 		case "undo":
 		{
-			// TODO : Fill in
+			// TODO : Fill in and fix a lot
 			// TODO : "mark" other functions that modify something
 			send("`undo` command invoked (work in progress)");
-			
+
 			if (!member.equals(recentMember))
 			{
 				send("You may only undo your own actions");
 			}
+
+			/*
+			 * For each command that modifies something (add/remove/create)
+			 * when the command is run, store the changes and the invoking member
+			 * When using undo, perform the opposite of the changes IFF
+			 * the invoking member is the same as the previous invoking member
+			 * For example, UserA adds a role R to themself. Store the following:
+			 * - user: UserA, action: add, roles: [R]
+			 * If undo is called _before_ the next modifying command,
+			 * (i.e allow an intervening `list` or `membersWith`, etc.)
+			 * perform the following:
+			 * removeRoles(UserA, roles)
+			 * undo is the only way the bot can delete roles from a server
+			 * 
+			 * Explicitly, the function of undo based on previous actions are:
+			 * Previous | Undo
+			 * ---------+-------
+			 * Add      | Remove
+			 * Remove   | Add
+			 * Create   | Delete
+			 * Only apply to roles that were actually modified in the previous operation
+			 * For example, if adding roles a, b, and c, but only b and c were actually applied,
+			 * undo will only affect b and c
+			 */
+			
+			if (recentCommand == null || recentMember == null || recentRoles == null)
+			{
+				send("No actions to undo");
+				return;
+			}
+			
+			switch (recentCommand)
+			{
+			case "add":
+			{
+				send("Want to remove " + recentRoles + " from " + recentMember.getEffectiveName());
+				break;
+			}
+			case "remove":
+			{
+				send("Want to add " + recentRoles + " to " + recentMember.getEffectiveName());
+				break;
+			}
+			case "create":
+			{
+				send("Want to delete " + recentRoles + " from server");
+				break;
+			}
+			default:
+			{
+				send("This should never happen");
+			}
+			}
+			break;
 		}
 
 		default:
