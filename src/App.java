@@ -68,11 +68,7 @@ public class App extends ListenerAdapter
 
 		try
 		{
-			Parser parser = new Parser(e);
-			if (parser.validate())
-			{
-				parser.execute();
-			}
+			new Parser(e).execute();
 		}
 		catch (Exception ex)
 		{

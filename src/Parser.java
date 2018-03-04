@@ -129,13 +129,14 @@ public class Parser
 
 	// Functions
 
-	public boolean validate()
-	{
-		return st.nextToken().equals(Global.prefix);
-	}
-
 	public void execute()
 	{
+		// Bot wasn't invoked
+		if (!(st.hasMoreTokens() && st.nextToken().equals(Global.prefix)))
+		{
+			return;
+		}
+
 		System.out.println(member.getEffectiveName() + " : " + message.getContentDisplay());
 
 		if (!st.hasMoreTokens())
