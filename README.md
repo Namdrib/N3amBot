@@ -28,6 +28,9 @@ List of accepted (case-insenstive) commands and their function:
 - `createRole ROLE`: create a role with name `ROLE`
 - `createRoles ROLES...`: create multiple roles with names `ROLES...`
 - `membersWith ROLE`: list all members to whom ROLE is assigned
+- `undo`: undo the most recent action (only works for add, remove, and create)
+  - only works if the most recent action was performed by the invoking member
+  - e.g. if PersonA creates four roles, only PersonA can undo this.
 
 All of these commands only apply to the person invoking them. i.e. they cannot be used to modify roles of other members.
 

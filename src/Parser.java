@@ -24,6 +24,11 @@ public class Parser
 	private Guild						guild;
 	private GuildController				guildController;
 
+	// Used for `undo`
+	private String						recentCommand;
+	private List<Role>					recentRoles;
+	private Member						recentMember;
+
 	public Parser(GuildMessageReceivedEvent e) throws Exception
 	{
 		event = e;
@@ -142,6 +147,7 @@ public class Parser
 		if (!st.hasMoreTokens())
 		{
 			send("invalid command invoked");
+			help();
 			return;
 		}
 		String command = st.nextToken().toLowerCase();
@@ -408,6 +414,18 @@ public class Parser
 			out += listWithoutBrackets(namesList);
 			send(out);
 			break;
+		}
+		
+		case "undo":
+		{
+			// TODO : Fill in
+			// TODO : "mark" other functions that modify something
+			send("`undo` command invoked (work in progress)");
+			
+			if (!member.equals(recentMember))
+			{
+				send("You may only undo your own actions");
+			}
 		}
 
 		default:
