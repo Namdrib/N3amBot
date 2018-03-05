@@ -14,6 +14,7 @@ public class Global
 		"removeAllRoles",
 		"createRole",
 		"createRoles",
-		"membersWith"
+		"membersWith",
+		"undo",
 	};
 }

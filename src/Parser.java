@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
 
@@ -54,11 +55,17 @@ public class Parser
 		channel.sendMessage(msg).queue();
 	}
 
+	private String getBotName()
+	{
+		Member bot = guild.getSelfMember();
+		return bot.getEffectiveName();
+	}
+
 	private void help()
 	{
 		String helpMessage
 			= " ----- " + Global.botName + " help -----\n"
-			+ "Invoke the bot using `" + Global.prefix + "` followed by one of the following commands:\n"
+			+ "Invoke the bot using `@" + getBotName() + "` followed by one of the following commands:\n"
 			+ "  `help`: display this help message\n"
 			+ "  `list`: list your own roles\n"
 			+ "  `listAll`: list all available roles you can add to yourself\n"
@@ -78,16 +85,11 @@ public class Parser
 		send(helpMessage);
 	}
 
-	private List<Role> getUsableRoles(Guild g)
+	private List<Role> getUsableRoles()
 	{
-		List<Role> roles = g.getRoles();
-		roles.remove(g.getPublicRole());
-		roles.removeAll(g.getRolesByName(Global.botName, false));
-		roles.removeAll(guild.getRolesByName("Adminh", true));
-		roles.removeAll(guild.getRolesByName("Mod", true));
-		roles.removeAll(guild.getRolesByName("Tutor", true));
-		roles.removeAll(guild.getRolesByName("Server Overlords", true));
-
+		List<Role> botRoles = guild.getSelfMember().getRoles();
+		int botPosition = Collections.max(botRoles.stream().map(Role::getPosition).collect(Collectors.toList()));
+		List<Role> roles = new ArrayList<>(guild.getRoles()).stream().filter(x -> x.getPosition() < botPosition).collect(Collectors.toList());
 		return roles;
 	}
 
@@ -101,7 +103,6 @@ public class Parser
 			return;
 		}
 
-		System.out.println("Creating role with name " + name);
 		try
 		{
 			guildController.createRole().setName(name)
@@ -111,7 +112,6 @@ public class Parser
 		{
 			ex.printStackTrace();
 		}
-		System.out.println("Done");
 	}
 
 	private <E> String listWithoutBrackets(List<E> items)
@@ -150,7 +150,7 @@ public class Parser
 	public void execute()
 	{
 		// Bot wasn't invoked
-		if (!(st.hasMoreTokens() && st.nextToken().equals(Global.prefix)))
+		if (!(st.hasMoreTokens() && st.nextToken().contains(getBotName())))
 		{
 			return;
 		}
