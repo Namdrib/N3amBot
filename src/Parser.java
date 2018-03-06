@@ -150,7 +150,7 @@ public class Parser
 	public void execute()
 	{
 		// Bot wasn't invoked
-		if (!(st.hasMoreTokens() && st.nextToken().contains(getBotName())))
+		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + getBotName())))
 		{
 			return;
 		}
