@@ -1,20 +1,20 @@
-# RoleBot
-Simple role management Discord bot
+# NamBot
+(Not quite) General Discord bot
 
 Feel free to make pull requests or issues if there's anything that you think is incorrect or could be improved on
 
 ## Installation
 - Requires Java 8, Maven, a [Discord bot token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 - Copy `config.properties.dummy` into `config.properties` and replace `YOUR_BOT_TOKEN_HERE` with your bot token (no quotes necessary)
-	- Alternatively, create an environment variable on your machine with the key `DISCORD_ROLEBOT_TOKEN` and set its value to be your token. This approach can be used for external hosting (e.g. deploying as a Heroku app)
+	- Alternatively, create an environment variable on your machine with the key `DISCORD_NAMBOT_TOKEN` and set its value to be your token. This approach can be used for external hosting (e.g. deploying as a Heroku app)
 - Compile using an IDE (such as Eclipse) or using the following:
 	- `mvn clean install`
-	- `java -jar target/discord-role-bot-jar-with-dependencies.jar`
+	- `java -jar target/discord-nambot-jar-with-dependencies.jar`
 
 ## Usage
-**IMPORTANT**: RoleBot must have the permission to manage roles in the server for the commands to work.
+**IMPORTANT**: NamBot must have the permission to manage roles in the server for the commands to work.
 
-The prefix used to activate RoleBot is `@RoleBot` (can be changed in `Global.java`)
+The prefix used to activate NamBot is `@NamBot` (can be changed in `Global.java`)
 
 List of accepted (case-insenstive) commands and their function:
 - `help`: display this help message

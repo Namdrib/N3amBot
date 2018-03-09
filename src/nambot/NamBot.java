@@ -29,7 +29,7 @@ public class NamBot extends ListenerAdapter
 	public static String getBotToken()
 	{
 		String botToken = null;
-		final String envVar = "DISCORD_ROLEBOT_TOKEN";
+		final String envVar = "DISCORD_NAMBOT_TOKEN";
 
 		Properties prop = new Properties();
 		final String filename = "config.properties"; // make sure this file exists, store token there
