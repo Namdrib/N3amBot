@@ -1,3 +1,5 @@
+package nambot.modules;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,13 +17,16 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
 
+import nambot.modules.*;
+import nambot.util.*;
+
 /**
  * Used to parse a user's commands 
  * 
  * @author Namdrib
  *
  */
-public class Parser
+public class RoleModule
 {
 	// Variables
 	private StringTokenizer				st;
@@ -39,7 +44,7 @@ public class Parser
 	 * @param e the GuildMessageReceivedEvent to which to respond
 	 * @throws Exception if the message was a Webhook message or the guild was null
 	 */
-	public Parser(GuildMessageReceivedEvent e) throws Exception
+	public RoleModule(GuildMessageReceivedEvent e) throws Exception
 	{
 		if (e.isWebhookMessage())
 		{

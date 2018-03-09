@@ -1,3 +1,5 @@
+package nambot;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,10 +15,13 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import nambot.modules.*;
+import nambot.util.*;
+
 // https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token
 // ^ to add the bot to a server
 
-public class App extends ListenerAdapter
+public class NamBot extends ListenerAdapter
 {
 	// Try to read the bot token
 	// Read from `config.properties` (in project root)
@@ -50,10 +55,10 @@ public class App extends ListenerAdapter
 
 	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
 	{
-		final String botToken = App.getBotToken();
+		final String botToken = NamBot.getBotToken();
 		JDA api = new JDABuilder(AccountType.BOT)
 				.setToken(botToken)
-				.addEventListener(new App())
+				.addEventListener(new NamBot())
 				.buildAsync();
 
 		// Set the game to a useful message
@@ -68,7 +73,7 @@ public class App extends ListenerAdapter
 
 		try
 		{
-			new Parser(e).execute();
+			new RoleModule(e).execute();
 		}
 		catch (Exception ex)
 		{

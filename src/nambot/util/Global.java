@@ -1,3 +1,5 @@
+package nambot.util;
+
 // Class to store global variables such as constants
 public class Global
 {
