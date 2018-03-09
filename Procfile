@@ -1,1 +1,1 @@
-bot: java -jar target/discord-role-bot-jar-with-dependencies.jar
+bot: java -jar target/discord-nambot-jar-with-dependencies.jar

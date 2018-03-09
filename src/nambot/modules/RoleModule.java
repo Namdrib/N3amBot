@@ -37,6 +37,20 @@ public class RoleModule
 	private Guild						guild;
 	private GuildController				guildController;
 
+	private final static String[] validCommands = {
+			"help",
+			"list",
+			"listAll",
+			"addRole",
+			"addRoles",
+			"removeRole",
+			"removeRoles",
+			"removeAllRoles",
+			"createRole",
+			"createRoles",
+			"membersWith",
+		};
+
 	/**
 	 * Set various member variables relating to the received event for later use
 	 * Also stores the incoming message in a StringTokeniser
@@ -67,34 +81,11 @@ public class RoleModule
 
 	// Helper functions
 
-	/**
-	 * Shortcut for queueing sending a message
-	 * 
-	 * @param msg message to send
-	 */
-	private void send(String msg)
-	{
-		if (channel != null)
-		{
-			channel.sendMessage(msg).queue();
-		}
-	}
-
-	/**
-	 * 
-	 * @return the bot's effective name in the current guild
-	 */
-	private String getBotName()
-	{
-		Member bot = guild.getSelfMember();
-		return bot.getEffectiveName();
-	}
-
 	private void help()
 	{
 		String helpMessage
 			= " ----- " + Global.botName + " help -----\n"
-			+ "Invoke the bot using `@" + getBotName() + "` followed by one of the following commands:\n"
+			+ "Invoke the bot using `@" + Helpers.getBotName(guild) + "` followed by one of the following commands:\n"
 			+ "  `help`: display this help message\n"
 			+ "  `list`: list your own roles\n"
 			+ "  `listAll`: list all available roles you can add to yourself\n"
@@ -108,7 +99,7 @@ public class RoleModule
 			+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
 		;
 
-		send(helpMessage);
+		Helpers.send(channel, helpMessage);
 	}
 
 	/**
@@ -138,7 +129,7 @@ public class RoleModule
 	{
 		if (!guild.getRolesByName(name, false).isEmpty())
 		{
-			send("Role " + name + " already exists");
+			Helpers.send(channel, "Role " + name + " already exists");
 			return;
 		}
 
@@ -166,49 +157,6 @@ public class RoleModule
 		return s.substring(1, s.length() - 1);
 	}
 
-	/**
-	 * 
-	 * Extract names from list of objects.
-	 * Returns early if list is null or any list elements are null
-	 * 
-	 * @param list list of objects. Ideally related to the JDA entities
-	 * @return List<String> containing the names of each item of the list
-	 */
-	private <E> List<String> getNamesFrom(List<E> list)
-	{
-		List<String> out = new ArrayList<>();
-		if (list == null)
-		{
-			return out;
-		}
-		for (E e : list)
-		{
-			if (e == null)
-			{
-				continue;
-			}
-			if (e instanceof Member)
-			{
-				out.add(((Member) e).getEffectiveName());
-			}
-			else if (e instanceof User)
-			{
-				out.add(((User) e).getName());
-			}
-			else if (e instanceof Role)
-			{
-				out.add(((Role) e).getName());
-			}
-			else
-			{
-				send("The author didn't account for " + e.getClass().toString());
-				return out;
-			}
-		}
-		Collections.sort(out);
-		return out;
-	}
-
 	// Maybe deprecated by getNamesFrom(List)
 	private void outputListOfRoles(List<Role> roles, String prefix)
 	{
@@ -223,7 +171,7 @@ public class RoleModule
 		List<String> namesList = roles.stream().map(Role::getName)
 				.collect(Collectors.toList());
 		out += listWithoutBrackets(namesList);
-		send(out);
+		Helpers.send(channel, out);
 	}
 
 	// Modify commands
@@ -243,17 +191,17 @@ public class RoleModule
 			List<Role> roles = guild.getRolesByName(argument, true);
 			if (roles.isEmpty())
 			{
-				send("Role " + argument + " does not exist. Maybe try creating it first");
+				Helpers.send(channel, "Role " + argument + " does not exist. Maybe try creating it first");
 				return null;
 			}
 			Role r = roles.get(0);
 			if (member.getRoles().contains(r))
 			{
-				send(member.getEffectiveName() + " already has role " + r.getName());
+				Helpers.send(channel, member.getEffectiveName() + " already has role " + r.getName());
 				return null;
 			}
 
-			send("Adding " + r.getName());
+			Helpers.send(channel, "Adding " + r.getName());
 			guildController.addSingleRoleToMember(member, r).queue();
 			out = r;
 		}
@@ -292,7 +240,7 @@ public class RoleModule
 			List<Role> guildRoles = guild.getRolesByName(argument, true);
 			if (guildRoles.isEmpty())
 			{
-				send("Role " + argument + " does not exist. Maybe try creating it first");
+				Helpers.send(channel, "Role " + argument + " does not exist. Maybe try creating it first");
 				return null;
 			}
 			Role r = guildRoles.get(0);
@@ -300,11 +248,11 @@ public class RoleModule
 			List<Role> memberRoles = member.getRoles();
 			if (!memberRoles.contains(r))
 			{
-				send(argument + " is not assigned to " + member.getEffectiveName());
+				Helpers.send(channel, argument + " is not assigned to " + member.getEffectiveName());
 				return null;
 			}
 
-			send("Removing " + r.getName());
+			Helpers.send(channel, "Removing " + r.getName());
 			guildController.removeSingleRoleFromMember(member, r).queue();
 			out = r;
 		}
@@ -362,7 +310,7 @@ public class RoleModule
 	public void execute()
 	{
 		// Bot wasn't invoked
-		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + getBotName())))
+		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + Helpers.getBotName(guild))))
 		{
 			return;
 		}
@@ -371,7 +319,7 @@ public class RoleModule
 
 		if (!st.hasMoreTokens())
 		{
-			send("invalid command invoked");
+			Helpers.send(channel, "invalid command invoked");
 			help();
 			return;
 		}
@@ -380,14 +328,14 @@ public class RoleModule
 		{
 			case "help":
 			{
-				send("`help` command invoked");
+				Helpers.send(channel, "`help` command invoked");
 				help();
 				break;
 			}
 
 			case "list":
 			{
-				send("`list` command invoked");
+				Helpers.send(channel, "`list` command invoked");
 
 				try
 				{
@@ -396,13 +344,13 @@ public class RoleModule
 
 					if (memberRoles.isEmpty())
 					{
-						send(member.getEffectiveName() + " has no roles");
+						Helpers.send(channel, member.getEffectiveName() + " has no roles");
 						return;
 					}
 
 					String listMessage = "List of current roles for " + member.getEffectiveName() + "\n";
-					String roleOutputs = listWithoutBrackets(getNamesFrom(memberRoles));
-					send(listMessage + roleOutputs);
+					String roleOutputs = listWithoutBrackets(Helpers.getNamesFrom(memberRoles));
+					Helpers.send(channel, listMessage + roleOutputs);
 				}
 				catch (Exception ex)
 				{
@@ -412,24 +360,24 @@ public class RoleModule
 			}
 			case "listall":
 			{
-				send("`listAll` command invoked");
+				Helpers.send(channel, "`listAll` command invoked");
 
 				List<Role> allRoles = new ArrayList<>(getUsableRoles());
 				allRoles.remove(guild.getPublicRole());
 
 				String listAllMessage = "List of all available roles\n";
-				String roleOutputs = listWithoutBrackets(getNamesFrom(allRoles));
-				send(listAllMessage + roleOutputs);
+				String roleOutputs = listWithoutBrackets(Helpers.getNamesFrom(allRoles));
+				Helpers.send(channel, listAllMessage + roleOutputs);
 				break;
 			}
 
 			case "addrole":
 			{
-				send("`addRole` command invoked");
+				Helpers.send(channel, "`addRole` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					send("Usage: `addRole role`");
+					Helpers.send(channel, "Usage: `addRole role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -439,7 +387,7 @@ public class RoleModule
 			}
 			case "addroles":
 			{
-				send("`addRoles` command invoked");
+				Helpers.send(channel, "`addRoles` command invoked");
 
 				// Collect all the aforementioned roles
 				String argument;
@@ -460,11 +408,11 @@ public class RoleModule
 
 				if (rolesToAdd.isEmpty())
 				{
-					send("No roles to add");
+					Helpers.send(channel, "No roles to add");
 					return;
 				}
 
-				send("Adding " + rolesToAdd);
+				Helpers.send(channel, "Adding " + rolesToAdd);
 				List<Role> addedRoles = new ArrayList<>();
 				try
 				{
@@ -479,11 +427,11 @@ public class RoleModule
 
 			case "removerole":
 			{
-				send("`removeRole` command invoked");
+				Helpers.send(channel, "`removeRole` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					send("Usage: `removeRole role`");
+					Helpers.send(channel, "Usage: `removeRole role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -493,7 +441,7 @@ public class RoleModule
 			}
 			case "removeroles":
 			{
-				send("`removeRoles` command invoked");
+				Helpers.send(channel, "`removeRoles` command invoked");
 
 				// Collect all the aforementioned roles
 				String argument;
@@ -501,7 +449,7 @@ public class RoleModule
 				final List<Role> potentialRoles = member.getRoles();
 				if (potentialRoles.isEmpty())
 				{
-					send("No roles to remove");
+					Helpers.send(channel, "No roles to remove");
 					return;
 				}
 
@@ -520,17 +468,17 @@ public class RoleModule
 
 				if (rolesToRemove.isEmpty())
 				{
-					send("No roles to remove");
+					Helpers.send(channel, "No roles to remove");
 					return;
 				}
 
-				send("Removing " + rolesToRemove);
+				Helpers.send(channel, "Removing " + rolesToRemove);
 				guildController.removeRolesFromMember(member, rolesToRemove).queue();
 				break;
 			}
 			case "removeallroles":
 			{
-				send("`removeAllRoles` command invoked");
+				Helpers.send(channel, "`removeAllRoles` command invoked");
 
 				List<Role> roles = new ArrayList<>(member.getRoles());
 				List<Role> removed = new ArrayList<>();
@@ -548,17 +496,17 @@ public class RoleModule
 				}
 				String out = "Roles removed from " + member.getEffectiveName() + ": ";
 				out += listWithoutBrackets(removed);
-				send(out);
+				Helpers.send(channel, out);
 				break;
 			}
 
 			case "createrole":
 			{
-				send("`createRole` command invoked");
+				Helpers.send(channel, "`createRole` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					send("Usage: `createRole role`");
+					Helpers.send(channel, "Usage: `createRole role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -568,7 +516,7 @@ public class RoleModule
 			}
 			case "createroles":
 			{
-				send("`createRoles` command invoked");
+				Helpers.send(channel, "`createRoles` command invoked");
 
 				String argument;
 				while (st.hasMoreTokens())
@@ -582,11 +530,11 @@ public class RoleModule
 
 			case "memberswith":
 			{
-				send("`membersWith` command invoked");
+				Helpers.send(channel, "`membersWith` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					send("Usage: `membersWith role`");
+					Helpers.send(channel, "Usage: `membersWith role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -595,7 +543,7 @@ public class RoleModule
 						.getMembersWithRoles(guild.getRolesByName(argument, true));
 				if (members.isEmpty())
 				{
-					send("No members with role " + argument);
+					Helpers.send(channel, "No members with role " + argument);
 					return;
 				}
 
@@ -610,12 +558,12 @@ public class RoleModule
 				List<String> namesList = members.stream()
 						.map(Member::getEffectiveName).collect(Collectors.toList());
 				out += listWithoutBrackets(namesList);
-				send(out);
+				Helpers.send(channel, out);
 				break;
 			}
 			default:
 			{
-				send("invalid command invoked");
+				Helpers.send(channel, "invalid command invoked");
 				help();
 			}
 		}
