@@ -420,7 +420,31 @@ public class RoleModule
 	 */
 	private void createRoles(List<String> arguments, Guild guild)
 	{
-		return;
+		List<String> noAdd = new ArrayList<>();
+		for (String s: arguments)
+		{
+			if (!guild.getRolesByName(s, false).isEmpty())
+			{
+				noAdd.add(s);
+			}
+			else
+			{
+				createMentionableRole(s);
+			}
+		}
+		
+		arguments.removeAll(noAdd);
+		String msg;
+		if (arguments.isEmpty())
+		{
+			msg = "Did not create any roles";
+		}
+		else
+		{
+			msg = "Successfully created roles:\n";
+			msg += Helpers.listWithoutBrackets(arguments);
+		}
+		Helpers.send(channel, msg);
 	}
 
 	// Functions
