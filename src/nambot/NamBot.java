@@ -21,6 +21,14 @@ import nambot.util.*;
 // https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token
 // ^ to add the bot to a server
 
+/**
+ * The main program. Creates a JDA object with the bot, reads token key from a
+ * property or from environment variable. If neither of these exists, cannot
+ * start up
+ * 
+ * @author Namdrib
+ *
+ */
 public class NamBot extends ListenerAdapter
 {
 	// Try to read the bot token
@@ -32,13 +40,13 @@ public class NamBot extends ListenerAdapter
 		final String envVar = "DISCORD_NAMBOT_TOKEN";
 
 		Properties prop = new Properties();
-		final String filename = "config.properties"; // make sure this file exists, store token there
+		final String filename = "config.properties";
 
 		// Read the bot's token from filename or environment variable
 		try (InputStream input = new FileInputStream(filename))
 		{
 			prop.load(input);
-			botToken = prop.getProperty("botToken");
+			botToken = (String) prop.getOrDefault("botToken", null);
 		}
 		catch (IOException ex)
 		{
@@ -53,13 +61,12 @@ public class NamBot extends ListenerAdapter
 		return botToken;
 	}
 
-	public static void main(String[] args) throws LoginException, IllegalArgumentException, RateLimitedException
+	public static void main(String[] args) throws LoginException,
+			IllegalArgumentException, RateLimitedException
 	{
 		final String botToken = NamBot.getBotToken();
-		JDA api = new JDABuilder(AccountType.BOT)
-				.setToken(botToken)
-				.addEventListener(new NamBot())
-				.buildAsync();
+		JDA api = new JDABuilder(AccountType.BOT).setToken(botToken)
+				.addEventListener(new NamBot()).buildAsync();
 
 		// Set the game to a useful message
 		api.getPresence().setGame(Game.playing("Invoke with " + Global.prefix));

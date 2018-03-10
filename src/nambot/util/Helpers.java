@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.entities.User;
  * Provide static helper functions for functions that are to be used in multiple
  * files
  * 
- * @author Denton
+ * @author Namdrib
  *
  */
 public class Helpers
@@ -81,11 +81,25 @@ public class Helpers
 			}
 			else
 			{
-				// System.out.println("Did not work for " + e.getClass().toString());
 				return out;
 			}
 		}
 		Collections.sort(out);
 		return out;
+	}
+
+	/**
+	 * For more user-friendly way to print lists. Meant to integrate with other
+	 * text formatters
+	 * 
+	 * @param items
+	 *            any list of items
+	 * @return String that is items.toString() without brackets opening '[' and
+	 *         closing ']'
+	 */
+	public static <E> String listWithoutBrackets(List<E> items)
+	{
+		String s = items.toString();
+		return s.substring(1, s.length() - 1);
 	}
 }
