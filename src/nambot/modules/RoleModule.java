@@ -18,6 +18,8 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import nambot.Module;
+import nambot.NamBot;
 import nambot.modules.*;
 import nambot.util.*;
 
@@ -28,79 +30,50 @@ import nambot.util.*;
  * @author Namdrib
  *
  */
-public class RoleModule
+public class RoleModule extends Module
 {
-	// Variables
-	private StringTokenizer				st;
-	private GuildMessageReceivedEvent	event;
-	private Message						message;
-	private Member						member;
-	private MessageChannel				channel;
-	private Guild						guild;
-	private GuildController				guildController;
-
-	private final static String[]		validCommands	= {
-			"help",
-			"list",
-			"listAll",
-			"addRole",
-			"addRoles",
-			"removeRole",
-			"removeRoles",
-			"removeAllRoles",
-			"createRole",
-			"createRoles",
-			"membersWith",
-	};
-
 	/**
-	 * Set various member variables relating to the received event for later use.
-	 * Also stores the incoming message in a StringTokeniser
+	 * Register this module with NamBot
 	 * 
-	 * @param e
-	 *            the GuildMessageReceivedEvent to which to respond
-	 * @throws Exception
-	 *             if the message was a Webhook message or the guild was null
+	 * @param nambot
+	 *            the NamBot object to which this registers
 	 */
-	public RoleModule(GuildMessageReceivedEvent e) throws Exception
+	public RoleModule(NamBot nambot)
 	{
-		if (e.isWebhookMessage())
-		{
-			throw new Exception("Received Webhook message");
-		}
-		event = e;
-		message = e.getMessage();
-		member = e.getMember();
-		channel = e.getChannel();
-		st = new StringTokenizer(message.getContentStripped());
-		guild = e.getGuild();
+		super(nambot, "role");
+	}
 
-		if (guild == null)
-		{
-			throw new Exception();
-		}
+	public RoleModule(NamBot nambot, String identifier)
+	{
+		super(nambot, identifier);
+	}
 
-		guildController = guild.getController();
+	@Override
+	protected void setCommandList()
+	{
+		commandList = new ArrayList<>(Arrays.asList("help", "list", "listall",
+				"add", "addn", "remove", "removen", "removeall", "create",
+				"createn", "memberswith"));
 	}
 
 	// Helper functions
 
-	private void help()
+	@Override
+	protected void help()
 	{
-		String helpMessage = " ----- " + Global.botName + " help -----\n"
-				+ "Invoke the bot using `@" + Helpers.getBotName(guild)
-				+ "` followed by one of the following commands:\n"
+		String helpMessage = " ----- Help message for " + getClass().getName() + " -----\n"
 				+ "  `help`: display this help message\n"
 				+ "  `list`: list your own roles\n"
 				+ "  `listAll`: list all available roles you can add to yourself\n"
-				+ "  `addRole ROLE`: add `ROLE` to yourself (where `ROLE` is in `listAll`)\n"
-				+ "  `addRoles ROLES...`: add `ROLES...` to yourself (where `ROLES...` are in `listAll`)\n"
-				+ "  `removeRole ROLE`: remove `ROLE` from yourself (where `ROLE` is in `list`)\n"
-				+ "  `removeRoles ROLES...`: remove `ROLES...` from yourself (where `ROLES...` are in `listAll`)\n"
-				+ "  `removeAllRoles`: remove all roles from yourself\n"
-				+ "  `createRole ROLE`: create a role with name `ROLE`\n"
-				+ "  `createRoles ROLES...`: create multiple roles with names `ROLES...`\n"
-				+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n";
+				+ "  `add ROLE`: add `ROLE` to yourself (where `ROLE` is in `listAll`)\n"
+				+ "  `addN ROLES...`: add `ROLES...` to yourself (where `ROLES...` are in `listAll`)\n"
+				+ "  `remove ROLE`: remove `ROLE` from yourself (where `ROLE` is in `list`)\n"
+				+ "  `removeN ROLES...`: remove `ROLES...` from yourself (where `ROLES...` are in `listAll`)\n"
+				+ "  `removeAll`: remove all roles from yourself\n"
+				+ "  `create ROLE`: create a role with name `ROLE`\n"
+				+ "  `createN ROLES...`: create multiple roles with names `ROLES...`\n"
+				+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
+		;
 
 		Helpers.send(channel, helpMessage);
 	}
@@ -450,26 +423,10 @@ public class RoleModule
 	// Functions
 	/**
 	 * Parse and carry out specified the user's commands
+	 * TODO : move majority to handle()
 	 */
-	public void execute()
+	public void execute(String command)
 	{
-		// Bot wasn't invoked
-		if (!(st.hasMoreTokens()
-				&& st.nextToken().equals("@" + Helpers.getBotName(guild))))
-		{
-			return;
-		}
-
-		System.out.println(member.getEffectiveName() + " : "
-				+ message.getContentDisplay());
-
-		if (!st.hasMoreTokens())
-		{
-			Helpers.send(channel, "invalid command invoked");
-			help();
-			return;
-		}
-		String command = st.nextToken().toLowerCase();
 		switch (command)
 		{
 			case "help":
@@ -521,13 +478,13 @@ public class RoleModule
 				break;
 			}
 
-			case "addrole":
+			case "add":
 			{
-				Helpers.send(channel, "`addRole` command invoked");
+				Helpers.send(channel, "`add` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					Helpers.send(channel, "Usage: `addRole role`");
+					Helpers.send(channel, "Usage: `addN role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -535,9 +492,9 @@ public class RoleModule
 				addRole(argument, member);
 				break;
 			}
-			case "addroles":
+			case "addn":
 			{
-				Helpers.send(channel, "`addRoles` command invoked");
+				Helpers.send(channel, "`addN` command invoked");
 
 				// Collect all the aforementioned roles
 				String argument;
@@ -560,13 +517,13 @@ public class RoleModule
 				break;
 			}
 
-			case "removerole":
+			case "remove":
 			{
-				Helpers.send(channel, "`removeRole` command invoked");
+				Helpers.send(channel, "`remove` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					Helpers.send(channel, "Usage: `removeRole role`");
+					Helpers.send(channel, "Usage: `remove role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -576,7 +533,7 @@ public class RoleModule
 			}
 			case "removeroles":
 			{
-				Helpers.send(channel, "`removeRoles` command invoked");
+				Helpers.send(channel, "`removeN` command invoked");
 
 				// Collect all the aforementioned roles
 				String argument;
@@ -612,7 +569,7 @@ public class RoleModule
 			}
 			case "removeallroles":
 			{
-				Helpers.send(channel, "`removeAllRoles` command invoked");
+				Helpers.send(channel, "`removeAll` command invoked");
 
 				List<Role> roles = new ArrayList<>(member.getRoles());
 				List<Role> removed = new ArrayList<>();
@@ -638,11 +595,11 @@ public class RoleModule
 
 			case "createrole":
 			{
-				Helpers.send(channel, "`createRole` command invoked");
+				Helpers.send(channel, "`create` command invoked");
 
 				if (!st.hasMoreTokens())
 				{
-					Helpers.send(channel, "Usage: `createRole role`");
+					Helpers.send(channel, "Usage: `create role`");
 					return;
 				}
 				String argument = st.nextToken();
@@ -652,7 +609,7 @@ public class RoleModule
 			}
 			case "createroles":
 			{
-				Helpers.send(channel, "`createRoles` command invoked");
+				Helpers.send(channel, "`createN` command invoked");
 
 				List<String> rolesToCreate = new ArrayList<>();
 				String argument;

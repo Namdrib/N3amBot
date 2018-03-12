@@ -4,6 +4,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -31,10 +36,17 @@ import nambot.util.*;
  */
 public class NamBot extends ListenerAdapter
 {
+	public Map<String, Module> modules;
+
+	public NamBot()
+	{
+		modules = new HashMap<>();
+	}
+
 	// Try to read the bot token
 	// Read from `config.properties` (in project root)
 	// If that doesn't exist, try to retrieve from environment vars
-	public static String getBotToken()
+	public String getBotToken()
 	{
 		String botToken = null;
 		final String envVar = "DISCORD_NAMBOT_TOKEN";
@@ -61,15 +73,57 @@ public class NamBot extends ListenerAdapter
 		return botToken;
 	}
 
+	/**
+	 * 
+	 * Links a Module to NamBot for future access. the Module will be invoked if
+	 * the first token after tagging NamBot is one of the entries in modules
+	 * 
+	 * @param module
+	 *            the Module to link
+	 * @param name
+	 *            lower-case no-space identified for the module
+	 * @return true iff the module was successfully loaded
+	 */
+	public boolean register(Module module, String identifier)
+	{
+		String moduleName = module.getClass().getSimpleName();
+		String result;
+		boolean out;
+
+		if (modules.containsKey(identifier))
+		{
+			result = "!!!! Already registered " + identifier + " to " + modules.get(identifier).getClass().getName();
+			out = false;
+		}
+		else
+		{
+			modules.put(identifier, module);
+			result = "Successfully registered " + moduleName + " as " + identifier;
+			out = true;
+		}
+
+		System.out.println(result);
+		return out;
+	}
+
 	public static void main(String[] args) throws LoginException,
 			IllegalArgumentException, RateLimitedException
 	{
-		final String botToken = NamBot.getBotToken();
+		NamBot nambot = new NamBot();
+
+		// Start the bot
+		final String botToken = nambot.getBotToken();
 		JDA api = new JDABuilder(AccountType.BOT).setToken(botToken)
-				.addEventListener(new NamBot()).buildAsync();
+				.addEventListener(nambot).buildAsync();
 
 		// Set the game to a useful message
 		api.getPresence().setGame(Game.playing("Invoke with " + Global.prefix));
+
+		// Load available modules
+		Module m;
+		m = new RoleModule(nambot, "role");
+		m = new HelpModule(nambot, "help");
+		m = new ListModule(nambot, "list");
 	}
 
 	@Override
@@ -77,14 +131,24 @@ public class NamBot extends ListenerAdapter
 	{
 		// Do not respond to messages from other bots, including ourself
 		if (e.getAuthor().isBot()) return;
-
-		try
+		
+		// Only continue if the bot was actually invoked
+		StringTokenizer st = new StringTokenizer(e.getMessage().getContentStripped());
+		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + Helpers.getBotName(e.getGuild()))))
 		{
-			new RoleModule(e).execute();
+			return;
 		}
-		catch (Exception ex)
+
+		// Proceed if a valid module was invoked
+		if (st.hasMoreTokens())
 		{
-			ex.printStackTrace();
+			String targetModule = st.nextToken();
+			if (modules.containsKey(targetModule))
+			{
+				Module m = modules.get(targetModule);
+				m.handle(e, st);
+			}
 		}
 	}
 }
+
