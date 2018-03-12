@@ -117,7 +117,7 @@ public class NamBot extends ListenerAdapter
 				.addEventListener(nambot).buildAsync();
 
 		// Set the game to a useful message
-		api.getPresence().setGame(Game.playing("Invoke with " + Global.prefix));
+		api.getPresence().setGame(Game.playing(Global.prefix + " help"));
 
 		// Load available modules
 		Module m;
@@ -131,7 +131,7 @@ public class NamBot extends ListenerAdapter
 	{
 		// Do not respond to messages from other bots, including ourself
 		if (e.getAuthor().isBot()) return;
-		
+
 		// Only continue if the bot was actually invoked
 		StringTokenizer st = new StringTokenizer(e.getMessage().getContentStripped());
 		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + Helpers.getBotName(e.getGuild()))))

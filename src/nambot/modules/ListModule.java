@@ -63,8 +63,8 @@ public class ListModule extends Module
 					entry.getKey());
 		}
 		helpMessage += "```\n";
-		helpMessage += "Invoke any of these using `@" + Global.botName + " identifier`\n";
-		helpMessage += "For further help with individual modules see, `@" + Global.botName + " identifier help`\n";
+		helpMessage += "Invoke any of these using `" + Global.prefix + " identifier`\n";
+		helpMessage += "For further help with individual modules see, `" + Global.prefix + " identifier help`\n";
 
 		Helpers.send(channel, helpMessage);
 	}

@@ -61,7 +61,7 @@ public class RoleModule extends Module
 	@Override
 	protected void help()
 	{
-		String helpMessage = " ----- Help message for " + getClass().getName() + " -----\n"
+		String helpMessage = " ----- Help message for " + getClass().getSimpleName() + " -----\n"
 				+ "  `help`: display this help message\n"
 				+ "  `list`: list your own roles\n"
 				+ "  `listAll`: list all available roles you can add to yourself\n"
@@ -531,7 +531,7 @@ public class RoleModule extends Module
 				removeRole(argument, member);
 				break;
 			}
-			case "removeroles":
+			case "removen":
 			{
 				Helpers.send(channel, "`removeN` command invoked");
 
@@ -567,7 +567,7 @@ public class RoleModule extends Module
 				removeRoles(rolesToRemove, member);
 				break;
 			}
-			case "removeallroles":
+			case "removeall":
 			{
 				Helpers.send(channel, "`removeAll` command invoked");
 
@@ -593,7 +593,7 @@ public class RoleModule extends Module
 				break;
 			}
 
-			case "createrole":
+			case "create":
 			{
 				Helpers.send(channel, "`create` command invoked");
 
@@ -607,7 +607,7 @@ public class RoleModule extends Module
 				createRole(argument, guild);
 				break;
 			}
-			case "createroles":
+			case "createn":
 			{
 				Helpers.send(channel, "`createN` command invoked");
 

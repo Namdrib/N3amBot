@@ -123,7 +123,8 @@ public abstract class Module
 
 	/**
 	 * Display a help message for this module. Each module needs its own help
-	 * function.
+	 * function. Ideally, display at least one line for each publicly available
+	 * command
 	 */
 	protected abstract void help();
 }

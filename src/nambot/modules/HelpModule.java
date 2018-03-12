@@ -29,12 +29,12 @@ public class HelpModule extends Module
 	protected void help()
 	{
 		String helpMessage = " ----- Help message for " + Global.botName + " -----\n"
-				+ "Invoke " + Global.botName + " with `@" + Global.botName + " identifier [command [arguments...]]`\n"
+				+ "Invoke " + Global.botName + " with `" + Global.prefix + " identifier [command [arguments...]]`\n"
 				+ "where...\n"
-				+ "  `identifier` is a module **identifier** that appears in `@" + Global.botName + " list`\n"
-				+ "  `command` is an item that appears in `@" + Global.botName + " identifier help`'s help list\n"
+				+ "  `identifier` is a module **identifier** that appears in `" + Global.prefix + " list`\n"
+				+ "  `command` is an item that appears in `" + Global.prefix + " identifier help`'s help list\n"
 				+ "\n"
-				+ "Further help can be foudn at: `@" + Global.botName + " identifier help`\n"
+				+ "Further help can be foudn at: `" + Global.prefix + " identifier help`\n"
 		;
 
 		Helpers.send(channel, helpMessage);
