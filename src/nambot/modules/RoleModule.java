@@ -3,24 +3,14 @@ package nambot.modules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.StringTokenizer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.managers.GuildController;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import nambot.Module;
 import nambot.NamBot;
-import nambot.modules.*;
 import nambot.util.*;
 
 /**
@@ -179,15 +169,18 @@ public class RoleModule extends Module
 				String msg;
 				if (member.getRoles().contains(r))
 				{
-					msg = "Successfully added role " + r.getName();
+					msg = "Successfully added role " + r.getName() + " to "
+							+ member.getEffectiveName();
 				}
 				else
 				{
-					msg = "Failed to add role1 " + r.getName();
+					msg = "Failed to add role1 " + r.getName() + " to "
+							+ member.getEffectiveName();
 				}
 				Helpers.send(channel, msg);
 			}, b -> {
-				Helpers.send(channel, "Failed to add role2 " + r.getName());
+				Helpers.send(channel, "Failed to add role2 " + r.getName()
+						+ " to " + member.getEffectiveName());
 			});
 		}
 		catch (Exception ex)
@@ -239,7 +232,8 @@ public class RoleModule extends Module
 				}
 				else
 				{
-					msg = "Successfully added roles:\n";
+					msg = "Successfully added roles to "
+							+ member.getEffectiveName() + ":\n";
 					msg += Helpers.listWithoutBrackets(
 							Helpers.getNamesFrom(newRoles));
 				}
@@ -285,11 +279,13 @@ public class RoleModule extends Module
 				String msg;
 				if (!member.getRoles().contains(r))
 				{
-					msg = "Successfully removed role " + r.getName();
+					msg = "Successfully removed role " + r.getName() + " from "
+							+ member.getEffectiveName();
 				}
 				else
 				{
-					msg = "Failed to remove role " + r.getName();
+					msg = "Failed to remove role " + r.getName() + " from "
+							+ member.getEffectiveName();
 				}
 				Helpers.send(channel, msg);
 			});
@@ -344,7 +340,8 @@ public class RoleModule extends Module
 						}
 						else
 						{
-							msg = "Successfully removed roles:\n";
+							msg = "Successfully removed roles from "
+									+ member.getEffectiveName() + ":\n";
 							msg += Helpers.listWithoutBrackets(
 									Helpers.getNamesFrom(oldRoles));
 						}
@@ -642,7 +639,8 @@ public class RoleModule extends Module
 					return;
 				}
 
-				String out = "Members with role " + argument + ":\n";
+				String out = members.size() + " members with role " + argument
+						+ ":\n";
 				List<String> namesList = Helpers.getNamesFrom(members);
 				out += Helpers.listWithoutBrackets(namesList);
 				Helpers.send(channel, out);

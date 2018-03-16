@@ -4,10 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.login.LoginException;
@@ -120,10 +118,9 @@ public class NamBot extends ListenerAdapter
 		api.getPresence().setGame(Game.playing(Global.prefix + " help"));
 
 		// Load available modules
-		Module m;
-		m = new RoleModule(nambot, "role");
-		m = new HelpModule(nambot, "help");
-		m = new ListModule(nambot, "list");
+		new HelpModule(nambot, "help");
+		new ListModule(nambot, "list");
+		new RoleModule(nambot, "role");
 	}
 
 	@Override

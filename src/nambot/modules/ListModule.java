@@ -1,16 +1,12 @@
 package nambot.modules;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import nambot.Module;
 import nambot.NamBot;
 import nambot.util.Global;
 import nambot.util.Helpers;
-import net.dv8tion.jda.core.entities.Role;
 
 public class ListModule extends Module
 {
