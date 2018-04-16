@@ -35,3 +35,14 @@ List of accepted (case-insenstive) commands and their function:
 All of these commands only apply to the person invoking them. i.e. they cannot be used to modify roles of other members.
 
 The addition/removal of roles will not work if the role of interest is "higher or equal highest role than [the invoker]". This order is based on the the role order in the server (In server settings -> Roles, with the "first" role being the highest and "last" role being the lowest). For example, if the order is ["a", "the\_bots\_role", "b", "c"], then the bot may only manage roles b and c. You can use this to "protect" some roles (such as as admin/mod/elevated roles). 
+
+## Deployment
+### Heroku
+- rather than using `config.properties` to store the bot token, use Heroku's environment manager to create an environment variable called `DISCORD_NAMBOT_TOKEN` to store the bot token.
+
+#### Setting up
+- See [the Heroku documentation](https://devcenter.heroku.com/articles/git) for more details
+- be in the root directory of the project
+- `heroku git:remote -a discord-nambot`
+- `git push heroku master`
+Done!

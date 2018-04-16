@@ -51,7 +51,8 @@ public class RoleModule extends Module
 	@Override
 	protected void help()
 	{
-		String helpMessage = " ----- Help message for " + getClass().getSimpleName() + " -----\n"
+		String helpMessage = " ----- Help message for "
+				+ getClass().getSimpleName() + " -----\n"
 				+ "  `help`: display this help message\n"
 				+ "  `list`: list your own roles\n"
 				+ "  `listAll`: list all available roles you can add to yourself\n"
@@ -62,8 +63,7 @@ public class RoleModule extends Module
 				+ "  `removeAll`: remove all roles from yourself\n"
 				+ "  `create ROLE`: create a role with name `ROLE`\n"
 				+ "  `createN ROLES...`: create multiple roles with names `ROLES...`\n"
-				+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n"
-		;
+				+ "  `membersWith ROLE`: list all members to whom ROLE is assigned\n";
 
 		Helpers.send(channel, helpMessage);
 	}
@@ -123,9 +123,11 @@ public class RoleModule extends Module
 		{
 			guildController.createRole().setName(name)
 					.queue(x -> x.getManager().setMentionable(true).queue(a -> {
-						if (guild.getRolesByName(name, false).get(0).getName() == name)
+						if (guild.getRolesByName(name, false).get(0)
+								.getName() == name)
 						{
-							Helpers.send(channel, "Created mentionable role " + name);
+							Helpers.send(channel,
+									"Created mentionable role " + name);
 						}
 					}));
 		}
@@ -158,28 +160,18 @@ public class RoleModule extends Module
 				return;
 			}
 			Role r = roles.get(0);
-//			if (member.getRoles().contains(r))
-//			{
-//				Helpers.send(channel, member.getEffectiveName()
-//						+ " already has role " + r.getName());
-//				return;
-//			}
+			if (member.getRoles().contains(r))
+			{
+				Helpers.send(channel, member.getEffectiveName()
+						+ " already has role " + r.getName());
+				return;
+			}
 
 			guildController.addSingleRoleToMember(member, r).queue(a -> {
-				String msg;
-				if (member.getRoles().contains(r))
-				{
-					msg = "Successfully added role " + r.getName() + " to "
-							+ member.getEffectiveName();
-				}
-				else
-				{
-					msg = "Failed to add role1 " + r.getName() + " to "
-							+ member.getEffectiveName();
-				}
-				Helpers.send(channel, msg);
+				Helpers.send(channel, "Added role " + r.getName() + " to "
+						+ member.getEffectiveName());
 			}, b -> {
-				Helpers.send(channel, "Failed to add role2 " + r.getName()
+				Helpers.send(channel, "Failed to add role " + r.getName()
 						+ " to " + member.getEffectiveName());
 			});
 		}
@@ -220,6 +212,8 @@ public class RoleModule extends Module
 
 		try
 		{
+			// TODO : Check old roles a bit closer to adding.
+			// Sometimes says did not add any roles when it did something
 			List<Role> oldRoles = member.getRoles();
 			guildController.addRolesToMember(member, rolesToAdd).queue(a -> {
 				List<Role> newRoles = new ArrayList<>(member.getRoles());
@@ -276,22 +270,11 @@ public class RoleModule extends Module
 			}
 
 			guildController.removeSingleRoleFromMember(member, r).queue(a -> {
-				String msg;
-				if (!member.getRoles().contains(r))
-				{
-					msg = "Successfully removed role " + r.getName() + " from "
-							+ member.getEffectiveName();
-				}
-				else
-				{
-					msg = "Something went wrong in removeRole -> success";
-				}
-				Helpers.send(channel, msg);
-			}, a -> {
-				String msg;
-				msg = "Failed to remove role " + r.getName() + " from "
-						+ member.getEffectiveName();
-				Helpers.send(channel, msg);
+				Helpers.send(channel, "Removed role " + r.getName() + " from "
+						+ member.getEffectiveName());
+			}, b -> {
+				Helpers.send(channel, "Failed to remove role " + r.getName()
+						+ " from " + member.getEffectiveName());
 			});
 		}
 		catch (Exception ex)
@@ -395,7 +378,7 @@ public class RoleModule extends Module
 	private void createRoles(List<String> arguments, Guild guild)
 	{
 		List<String> noAdd = new ArrayList<>();
-		for (String s: arguments)
+		for (String s : arguments)
 		{
 			if (!guild.getRolesByName(s, false).isEmpty())
 			{
@@ -406,7 +389,7 @@ public class RoleModule extends Module
 				createMentionableRole(s);
 			}
 		}
-		
+
 		arguments.removeAll(noAdd);
 		String msg;
 		if (arguments.isEmpty())

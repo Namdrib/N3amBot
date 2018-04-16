@@ -131,12 +131,12 @@ public class NamBot extends ListenerAdapter
 	{
 		System.out.println("MESSAGE EMBED EVENT");
 	}
-	
- 	@Override
- 	public void onGuildMessageEmbed(GuildMessageEmbedEvent event)
- 	{
+
+	@Override
+	public void onGuildMessageEmbed(GuildMessageEmbedEvent event)
+	{
 		System.out.println("GUILD MESSAGE EMBED EVENT");
- 	}
+	}
 
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e)
@@ -168,6 +168,13 @@ public class NamBot extends ListenerAdapter
 			{
 				Module m = modules.get(targetModule);
 				m.handle(e, st);
+			}
+			else
+			{
+				String msg = "No identifier " + targetModule + " exists. See `"
+						+ Global.prefix
+						+ " list` for a list of valid identifiers";
+				Helpers.send(e.getChannel(), msg);
 			}
 		}
 	}
