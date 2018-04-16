@@ -15,9 +15,9 @@ public class ListModule extends Module
 		super(nambot, "list");
 	}
 
-	public ListModule(NamBot nambot, String command)
+	public ListModule(NamBot nambot, String identifier)
 	{
-		super(nambot, command);
+		super(nambot, identifier);
 	}
 
 	@Override

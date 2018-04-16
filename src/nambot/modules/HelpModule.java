@@ -14,9 +14,9 @@ public class HelpModule extends Module
 		super(nambot, "help");
 	}
 
-	public HelpModule(NamBot nambot, String command)
+	public HelpModule(NamBot nambot, String identifier)
 	{
-		super(nambot, command);
+		super(nambot, identifier);
 	}
 
 	@Override
@@ -29,12 +29,12 @@ public class HelpModule extends Module
 	protected void help()
 	{
 		String helpMessage = " ----- Help message for " + Global.botName + " -----\n"
-				+ "Invoke " + Global.botName + " with `" + Global.prefix + " identifier [command [arguments...]]`\n"
+				+ "Invoke with `" + Global.prefix + " identifier [command [arguments...]]`\n"
 				+ "where...\n"
-				+ "  `identifier` is a module **identifier** that appears in `" + Global.prefix + " list`\n"
-				+ "  `command` is an item that appears in `" + Global.prefix + " identifier help`'s help list\n"
+				+ "  `identifier`: a module **identifier** that appears in `" + Global.prefix + " list`\n"
+				+ "  `command`: an item that appears in `" + Global.prefix + " identifier help`'s help list\n"
 				+ "\n"
-				+ "Further help can be foudn at: `" + Global.prefix + " identifier help`\n"
+				+ "Further help can be found at: `" + Global.prefix + " identifier help` (e.g. `@NamBot role help`)\n"
 		;
 
 		Helpers.send(channel, helpMessage);

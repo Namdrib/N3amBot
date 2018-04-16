@@ -158,12 +158,12 @@ public class RoleModule extends Module
 				return;
 			}
 			Role r = roles.get(0);
-			if (member.getRoles().contains(r))
-			{
-				Helpers.send(channel, member.getEffectiveName()
-						+ " already has role " + r.getName());
-				return;
-			}
+//			if (member.getRoles().contains(r))
+//			{
+//				Helpers.send(channel, member.getEffectiveName()
+//						+ " already has role " + r.getName());
+//				return;
+//			}
 
 			guildController.addSingleRoleToMember(member, r).queue(a -> {
 				String msg;
@@ -284,9 +284,13 @@ public class RoleModule extends Module
 				}
 				else
 				{
-					msg = "Failed to remove role " + r.getName() + " from "
-							+ member.getEffectiveName();
+					msg = "Something went wrong in removeRole -> success";
 				}
+				Helpers.send(channel, msg);
+			}, a -> {
+				String msg;
+				msg = "Failed to remove role " + r.getName() + " from "
+						+ member.getEffectiveName();
 				Helpers.send(channel, msg);
 			});
 		}

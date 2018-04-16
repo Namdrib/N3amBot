@@ -14,6 +14,9 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageEmbedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -124,8 +127,29 @@ public class NamBot extends ListenerAdapter
 	}
 
 	@Override
+	public void onMessageEmbed(MessageEmbedEvent event)
+	{
+		System.out.println("MESSAGE EMBED EVENT");
+	}
+	
+ 	@Override
+ 	public void onGuildMessageEmbed(GuildMessageEmbedEvent event)
+ 	{
+		System.out.println("GUILD MESSAGE EMBED EVENT");
+ 	}
+
+	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e)
 	{
+		if (e.getMessage().getEmbeds() != null && !e.getMessage().getEmbeds().isEmpty())
+		{
+			Module m = modules.get("lyrics");
+			if (m != null)
+			{
+				m.handle(e, new StringTokenizer(e.getMessage().getContentStripped()));
+			}
+		}
+
 		// Do not respond to messages from other bots, including ourself
 		if (e.getAuthor().isBot()) return;
 
