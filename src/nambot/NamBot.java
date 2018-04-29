@@ -93,13 +93,15 @@ public class NamBot extends ListenerAdapter
 
 		if (modules.containsKey(identifier))
 		{
-			result = "!!!! Already registered " + identifier + " to " + modules.get(identifier).getClass().getName();
+			result = "!!!! Already registered " + identifier + " to "
+					+ modules.get(identifier).getClass().getName();
 			out = false;
 		}
 		else
 		{
 			modules.put(identifier, module);
-			result = "Successfully registered " + moduleName + " as " + identifier;
+			result = "Successfully registered " + moduleName + " as "
+					+ identifier;
 			out = true;
 		}
 
@@ -124,6 +126,7 @@ public class NamBot extends ListenerAdapter
 		new HelpModule(nambot, "help");
 		new ListModule(nambot, "list");
 		new RoleModule(nambot, "role");
+		new OzbModule(nambot, "ozb");
 	}
 
 	@Override
@@ -141,12 +144,14 @@ public class NamBot extends ListenerAdapter
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e)
 	{
-		if (e.getMessage().getEmbeds() != null && !e.getMessage().getEmbeds().isEmpty())
+		if (e.getMessage().getEmbeds() != null
+				&& !e.getMessage().getEmbeds().isEmpty())
 		{
 			Module m = modules.get("lyrics");
 			if (m != null)
 			{
-				m.handle(e, new StringTokenizer(e.getMessage().getContentStripped()));
+				m.handle(e, new StringTokenizer(
+						e.getMessage().getContentDisplay()));
 			}
 		}
 
@@ -154,8 +159,10 @@ public class NamBot extends ListenerAdapter
 		if (e.getAuthor().isBot()) return;
 
 		// Only continue if the bot was actually invoked
-		StringTokenizer st = new StringTokenizer(e.getMessage().getContentStripped());
-		if (!(st.hasMoreTokens() && st.nextToken().equals("@" + Helpers.getBotName(e.getGuild()))))
+		StringTokenizer st = new StringTokenizer(
+				e.getMessage().getContentDisplay());
+		if (!(st.hasMoreTokens() && st.nextToken()
+				.equals("@" + Helpers.getBotName(e.getGuild()))))
 		{
 			return;
 		}
@@ -179,4 +186,3 @@ public class NamBot extends ListenerAdapter
 		}
 	}
 }
-
