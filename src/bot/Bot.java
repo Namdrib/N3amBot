@@ -1,4 +1,4 @@
-package nambot;
+package bot;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
+import bot.modules.*;
+import bot.util.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -20,9 +22,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-
-import nambot.modules.*;
-import nambot.util.*;
 
 // https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token
 // ^ to add the bot to a server
@@ -35,11 +34,11 @@ import nambot.util.*;
  * @author Namdrib
  *
  */
-public class NamBot extends ListenerAdapter
+public class Bot extends ListenerAdapter
 {
 	public Map<String, Module> modules;
 
-	public NamBot()
+	public Bot()
 	{
 		modules = new HashMap<>();
 	}
@@ -50,7 +49,7 @@ public class NamBot extends ListenerAdapter
 	public String getBotToken()
 	{
 		String botToken = null;
-		final String envVar = "DISCORD_NAMBOT_TOKEN";
+		final String envVar = "DISCORD_BOT_TOKEN";
 
 		Properties prop = new Properties();
 		final String filename = "config.properties";
@@ -76,8 +75,8 @@ public class NamBot extends ListenerAdapter
 
 	/**
 	 * 
-	 * Links a Module to NamBot for future access. the Module will be invoked if
-	 * the first token after tagging NamBot is one of the entries in modules
+	 * Links a Module to the bot for future access. the Module will be invoked
+	 * if the first token after tagging the bot is one of the entries in modules
 	 * 
 	 * @param module
 	 *            the Module to link
@@ -112,21 +111,21 @@ public class NamBot extends ListenerAdapter
 	public static void main(String[] args) throws LoginException,
 			IllegalArgumentException, RateLimitedException
 	{
-		NamBot nambot = new NamBot();
+		Bot bot = new Bot();
 
 		// Start the bot
-		final String botToken = nambot.getBotToken();
+		final String botToken = bot.getBotToken();
 		JDA api = new JDABuilder(AccountType.BOT).setToken(botToken)
-				.addEventListener(nambot).buildAsync();
+				.addEventListener(bot).buildAsync();
 
 		// Set the game to a useful message
 		api.getPresence().setGame(Game.playing(Global.prefix + " help"));
 
 		// Load available modules
-		new HelpModule(nambot, "help");
-		new ListModule(nambot, "list");
-		new RoleModule(nambot, "role");
-		new OzbModule(nambot, "ozb");
+		new HelpModule(bot, "help");
+		new ListModule(bot, "list");
+		new RoleModule(bot, "role");
+		new OzbModule(bot, "ozb");
 	}
 
 	@Override
@@ -183,6 +182,13 @@ public class NamBot extends ListenerAdapter
 						+ " list` for a list of valid identifiers";
 				Helpers.send(e.getChannel(), msg);
 			}
+		}
+		else
+		{
+			String msg = "Invoke with `" + Global.prefix
+					+ " identifier [command [arguments...]]`\n" + "See `"
+					+ Global.prefix + " list` for a list of valid identifiers";
+			Helpers.send(e.getChannel(), msg);
 		}
 	}
 }

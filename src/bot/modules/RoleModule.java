@@ -1,4 +1,4 @@
-package nambot.modules;
+package bot.modules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import bot.Module;
+import bot.Bot;
+import bot.util.*;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import nambot.Module;
-import nambot.NamBot;
-import nambot.util.*;
 
 /**
  * Module responsible for handling roles Includes listing, adding/removing from
@@ -23,19 +23,19 @@ import nambot.util.*;
 public class RoleModule extends Module
 {
 	/**
-	 * Register this module with NamBot
+	 * Register this module with Bot
 	 * 
-	 * @param nambot
-	 *            the NamBot object to which this registers
+	 * @param bot
+	 *            the Bot object to which this registers
 	 */
-	public RoleModule(NamBot nambot)
+	public RoleModule(Bot bot)
 	{
-		super(nambot, "role");
+		super(bot, "role");
 	}
 
-	public RoleModule(NamBot nambot, String identifier)
+	public RoleModule(Bot bot, String identifier)
 	{
-		super(nambot, identifier);
+		super(bot, identifier);
 	}
 
 	@Override
@@ -406,8 +406,8 @@ public class RoleModule extends Module
 
 	// Functions
 	/**
-	 * Parse and carry out specified the user's commands
-	 * TODO : move majority to handle()
+	 * Parse and carry out specified the user's commands TODO : move majority to
+	 * handle()
 	 */
 	public void execute(String command)
 	{

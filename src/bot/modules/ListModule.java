@@ -1,23 +1,23 @@
-package nambot.modules;
+package bot.modules;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
-import nambot.Module;
-import nambot.NamBot;
-import nambot.util.Global;
-import nambot.util.Helpers;
+import bot.Module;
+import bot.Bot;
+import bot.util.Global;
+import bot.util.Helpers;
 
 public class ListModule extends Module
 {
-	public ListModule(NamBot nambot)
+	public ListModule(Bot bot)
 	{
-		super(nambot, "list");
+		super(bot, "list");
 	}
 
-	public ListModule(NamBot nambot, String identifier)
+	public ListModule(Bot bot, String identifier)
 	{
-		super(nambot, identifier);
+		super(bot, identifier);
 	}
 
 	@Override
@@ -34,9 +34,10 @@ public class ListModule extends Module
 		// Find longest name lengths
 		int maxModuleName = "module".length();
 		int maxIdentifier = "identifier".length();
-		for (Entry<String, Module> entry : nambot.modules.entrySet())
+		for (Entry<String, Module> entry : bot.modules.entrySet())
 		{
-			maxModuleName = Math.max(maxModuleName, entry.getValue().getClass().getSimpleName().length());
+			maxModuleName = Math.max(maxModuleName,
+					entry.getValue().getClass().getSimpleName().length());
 			maxIdentifier = Math.max(maxIdentifier, entry.getKey().length());
 		}
 
@@ -51,7 +52,7 @@ public class ListModule extends Module
 				.replace(' ', '-');
 
 		// Output formatted
-		for (Entry<String, Module> entry : nambot.modules.entrySet())
+		for (Entry<String, Module> entry : bot.modules.entrySet())
 		{
 			helpMessage += String.format(
 					"%1$" + maxModuleName + "s|%2$" + maxIdentifier + "s\n",
@@ -59,8 +60,10 @@ public class ListModule extends Module
 					entry.getKey());
 		}
 		helpMessage += "```\n";
-		helpMessage += "Invoke any of these using `" + Global.prefix + " identifier`\n";
-		helpMessage += "For further help with individual modules see, `" + Global.prefix + " identifier help`\n";
+		helpMessage += "Invoke any of these using `" + Global.prefix
+				+ " identifier`\n";
+		helpMessage += "For further help with individual modules see, `"
+				+ Global.prefix + " identifier help`\n";
 
 		Helpers.send(channel, helpMessage);
 	}

@@ -1,4 +1,4 @@
-package nambot.modules;
+package bot.modules;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,26 +9,26 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import nambot.Module;
-import nambot.NamBot;
-import nambot.util.Helpers;
+import bot.Module;
+import bot.Bot;
+import bot.util.Helpers;
 
 public class OzbModule extends Module
 {
 	/**
-	 * Register this module with NamBot
+	 * Register this module with Bot
 	 * 
-	 * @param nambot
-	 *            the NamBot object to which this registers
+	 * @param bot
+	 *            the Bot object to which this registers
 	 */
-	public OzbModule(NamBot nambot)
+	public OzbModule(Bot bot)
 	{
-		super(nambot, "role");
+		super(bot, "role");
 	}
 
-	public OzbModule(NamBot nambot, String identifier)
+	public OzbModule(Bot bot, String identifier)
 	{
-		super(nambot, identifier);
+		super(bot, identifier);
 	}
 
 	@Override

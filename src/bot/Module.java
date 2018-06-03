@@ -1,10 +1,10 @@
-package nambot;
+package bot;
 
 import java.util.List;
 import java.util.StringTokenizer;
 
-import nambot.NamBot;
-import nambot.util.Helpers;
+import bot.Bot;
+import bot.util.Helpers;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -15,8 +15,8 @@ import net.dv8tion.jda.core.managers.GuildController;
 /**
  * This class is the basis for all modules/commands the bot can handle. Modules
  * are essentially a set of functions the bot can use. New modules (which should
- * be in the `modules` folder) need to be registered with NamBot before it can
- * be used. This allows NamBot to tell whether a given command is valid
+ * be in the `modules` folder) need to be registered with the bot before it can
+ * be used. This allows the bot to tell whether a given command is valid
  * 
  * All Modules should be named [Functionality]Module where [Functionality] is
  * the name of your module. For example, "RoleModule" or "BanModule"
@@ -40,20 +40,20 @@ public abstract class Module
 	protected List<String>				commandList;
 	protected String					identifier;
 
-	protected NamBot					nambot;
+	protected Bot						bot;
 
-	public Module(NamBot nambot)
+	public Module(Bot bot)
 	{
-		this.nambot = nambot;
-		nambot.register(this, identifier);
+		this.bot = bot;
+		bot.register(this, identifier);
 		setCommandList();
 	}
 
-	public Module(NamBot nambot, String identifier)
+	public Module(Bot bot, String identifier)
 	{
-		this.nambot = nambot;
+		this.bot = bot;
 		this.identifier = identifier;
-		nambot.register(this, this.identifier);
+		bot.register(this, this.identifier);
 		setCommandList();
 	}
 

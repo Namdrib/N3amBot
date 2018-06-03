@@ -1,4 +1,4 @@
-package nambot.util;
+package bot.util;
 
 /**
  * Used to store global variables such as constants
@@ -8,6 +8,6 @@ package nambot.util;
  */
 public class Global
 {
-	public final static String	botName	= "NamBot";
+	public final static String	botName	= "N3amBot";
 	public final static String	prefix	= "@" + botName;
 }

@@ -1,4 +1,4 @@
-package nambot.util;
+package bot.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

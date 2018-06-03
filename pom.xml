@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>discord-nambot</artifactId>
+	<artifactId>namdrib-discord-bot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<repositories>
 		<repository>
@@ -48,13 +48,13 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>nambot/NamBot</mainClass>
+							<mainClass>bot/Bot</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<finalName>discord-nambot</finalName>
+					<finalName>namdrib-discord-bot</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -71,11 +71,11 @@
 				<version>2.0.3</version>
 				<configuration>
 					<processTypes>
-						<bot>java $JAVA_OPTS -cp target/classes:target/dependency* nambot/NamBot</bot>
+						<bot>java $JAVA_OPTS -cp target/classes:target/dependency* bot/Bot</bot>
 					</processTypes>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	<groupId>discord-nambot</groupId>
+	<groupId>namdrib-discord-bot</groupId>
 </project>
