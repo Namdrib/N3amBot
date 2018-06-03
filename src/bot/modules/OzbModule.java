@@ -23,7 +23,7 @@ public class OzbModule extends Module
 	 */
 	public OzbModule(Bot bot)
 	{
-		super(bot, "role");
+		super(bot, "ozb");
 	}
 
 	public OzbModule(Bot bot, String identifier)
