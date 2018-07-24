@@ -404,10 +404,39 @@ public class RoleModule extends Module
 		Helpers.send(channel, msg);
 	}
 
+	/**
+	 * List all members of the current guild with the provided role
+	 * 
+	 * @param argument
+	 *            the name of the role to search membership
+	 */
+	private void membersWith(String argument)
+	{
+		List<Role> matchingRoles = guild.getRolesByName(argument, false);
+		if (matchingRoles.isEmpty())
+		{
+			Helpers.send(channel, "No role with name " + argument
+					+ ". See `listAll` for available roles");
+			return;
+		}
+		List<Member> members = guild.getMembersWithRoles(matchingRoles);
+		if (members.isEmpty())
+		{
+			Helpers.send(channel, "No members with role " + argument);
+			return;
+		}
+
+		String out = members.size() + " members with role " + argument + ":\n";
+		List<String> namesList = Helpers.getNamesFrom(members);
+		out += Helpers.listWithoutBrackets(namesList);
+		Helpers.send(channel, out);
+	}
+
 	// Functions
 	/**
-	 * Parse and carry out specified the user's commands TODO : move majority to
-	 * handle()
+	 * Parse and carry out specified the user's commands
+	 * <p>
+	 * TODO : move majority to <code>handle()</code>
 	 */
 	public void execute(String command)
 	{
@@ -617,20 +646,8 @@ public class RoleModule extends Module
 					return;
 				}
 				String argument = st.nextToken();
-
-				List<Member> members = guild.getMembersWithRoles(
-						guild.getRolesByName(argument, false));
-				if (members.isEmpty())
-				{
-					Helpers.send(channel, "No members with role " + argument);
-					return;
-				}
-
-				String out = members.size() + " members with role " + argument
-						+ ":\n";
-				List<String> namesList = Helpers.getNamesFrom(members);
-				out += Helpers.listWithoutBrackets(namesList);
-				Helpers.send(channel, out);
+				
+				membersWith(argument);
 				break;
 			}
 			default:
