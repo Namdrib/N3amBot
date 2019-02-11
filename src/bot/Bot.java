@@ -131,13 +131,13 @@ public class Bot extends ListenerAdapter
 	@Override
 	public void onMessageEmbed(MessageEmbedEvent event)
 	{
-		System.out.println("MESSAGE EMBED EVENT");
+		// System.out.println("MESSAGE EMBED EVENT");
 	}
 
 	@Override
 	public void onGuildMessageEmbed(GuildMessageEmbedEvent event)
 	{
-		System.out.println("GUILD MESSAGE EMBED EVENT");
+		// System.out.println("GUILD MESSAGE EMBED EVENT");
 	}
 
 	@Override
