@@ -62,7 +62,8 @@ public class Bot extends ListenerAdapter
 		}
 		catch (IOException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("Could not find config.properties, loading token from environment variable " + envVar);
+			// ex.printStackTrace();
 		}
 
 		// Retrieve from environment variables (for Heroku)
